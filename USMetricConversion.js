@@ -13,10 +13,12 @@
     'use strict';
     const convertToMetric = false;
 
-    const fahrenheitRegex = /-?\d+°?F/gi;
-    const celsiusRegex = /-?\d+°?C/gi;
-    const milesRegex = /\d+\s?mi(le)?/gi;
-    const kilometresRegex = /\d+\s?km/gi;
+    const fahrenheitRegex = /-?\d+\s?°?F.?/gi;
+    const celsiusRegex = /-?\d+\s?°?C.?/gi;
+    const milesRegex = /\d+\s?mi(le)?.?/gi;
+    const kilometresRegex = /\d+\s?km.?/gi;
+    const poundsRegex = /\d+\s?lbs?.?/gi;
+    const kilogramsRegex = /\d+\s?kg.?/gi;
 
     function fahrenheitToCelsius(match) {
         const fahrenheit = parseInt(match);
@@ -40,6 +42,17 @@
         return miles + "mi";
     }
 
+    function poundsToKilograms(match) {
+        const pounds = parseInt(match);
+        const kilograms = Math.round(pounds / 2.205);
+        return kilograms + "kg ";
+    }
+    function kilogramsToPounds(match) {
+        const kilograms = parseInt(match);
+        const pounds = Math.round(kilograms * 2.205);
+        return pounds + "lbs ";
+    }
+
     const textNodes = document.evaluate('//text()', document, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
 
     for(let i = 0; i < textNodes.snapshotLength; i++){
@@ -47,10 +60,12 @@
         if(convertToMetric) {
             textNodes.snapshotItem(i).textContent = textNodes.snapshotItem(i).textContent.replace(fahrenheitRegex, fahrenheitToCelsius);
             textNodes.snapshotItem(i).textContent = textNodes.snapshotItem(i).textContent.replace(milesRegex, milesToKilometres);
+            textNodes.snapshotItem(i).textContent = textNodes.snapshotItem(i).textContent.replace(poundsRegex, poundsToKilograms);
         }
         else {
             textNodes.snapshotItem(i).textContent = textNodes.snapshotItem(i).textContent.replace(celsiusRegex, celsiusToFahrenheit);
             textNodes.snapshotItem(i).textContent = textNodes.snapshotItem(i).textContent.replace(kilometresRegex, kilometresToMiles);
+            textNodes.snapshotItem(i).textContent = textNodes.snapshotItem(i).textContent.replace(kilogramsRegex, kilogramsToPounds);
         }
     }
 
